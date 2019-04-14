@@ -24,43 +24,41 @@ class Vector {
 }
 
 class Actor {
-    constructor(pos, size, speed) {
-
-        // pos
-        if (pos !== undefined) {
-            if ((pos instanceof Vector) !== true) {
-                throw Error();
-            } else { this.pos = pos; }
-        } else {
-            this.pos = new Vector(0, 0);
-        }
-
-        // size
-        if (size !== undefined) {
-            if ((size instanceof Vector) !== true) {
-                throw Error();
-            } else { this.size = size; }
-        } else {
-            this.size = new Vector(1, 1);
-        }
-
-        // speed
-        if (speed !== undefined) {
-            if ((speed instanceof Vector) !== true) {
-                throw Error();
-            } else { this.speed = new speed.constructor(); }
-        } else {
-            this.speed = new Vector(0, 0);
-        }
-
-        this.left = this.pos.x;
-        this.right = this.left + this.size.x;
-        this.top = this.pos.y;
-        this.bottom = this.top + this.size.y;
-    }
+    constructor(
+		pos = new Vector(0, 0),
+		size = new Vector(1, 1),
+		speed = new Vector(0, 0)
+	) {
+		if (
+			(pos && !(pos instanceof Vector)) ||
+			(size && !(size instanceof Vector)) ||
+			(speed && !(speed instanceof Vector))
+		) {
+			throw new Error();
+		}
+		this.pos = pos;
+		this.size = size;
+		this.speed = speed;
+	}
 
     get type() {
 		return 'actor';
+    }
+    
+    get left() {
+		return this.pos.x;
+	}
+
+	get top() {
+		return this.pos.y;
+	}
+
+	get right() {
+		return this.pos.x + this.size.x;
+	}
+
+	get bottom() {
+		return this.pos.y + this.size.y;
 	}
 
     act() {}
@@ -85,14 +83,14 @@ class Actor {
 }
 
 class Level {
-    constructor(grid = [], actors = []) {
+    constructor(grid, actors = []) {
         this.grid = grid;
         this.actors = actors;
         this.player = this.actors.find(actor => actor.type === 'player');
-        this.height = this.grid.length;
-        this.width = this.grid.reduce((a, b) => {
-			return b.length > a ? b.length : a;
-		}, 0);
+        
+        this.height = (grid) ? grid.length : 0;
+        this.width = (grid && grid[0]) ? grid[0].length : 0;
+
 		this.status = null;
 		this.finishDelay = 1;
     }
@@ -118,13 +116,14 @@ class Level {
     }
 
     obstacleAt(pos, size) {
+        
         if (!(pos instanceof Vector) || !(size instanceof Vector)) {
 			throw new Error();
         }
         
         const leftBorder = Math.floor(pos.x);
         const rightBorder = Math.ceil(pos.x + size.x);
-        const topBorder = Math.floor(pos.y);
+        const topBorder = Math.ceil(pos.y);
         const bottomBorder = Math.ceil(pos.y + size.y);
 
         if ((leftBorder < 0) || (rightBorder > this.width) || (topBorder < 0)) {
@@ -367,6 +366,6 @@ const schemas = [
     'o': Coin
   };
   
-  const parser = new LevelParser(actorDict);
-  runGame(schemas, parser, DOMDisplay)
+const parser = new LevelParser(actorDict);
+runGame(schemas, parser, DOMDisplay)
     .then(() => console.log('Вы выиграли'));
