@@ -123,7 +123,7 @@ class Level {
         
         const leftBorder = Math.floor(pos.x);
         const rightBorder = Math.ceil(pos.x + size.x);
-        const topBorder = Math.ceil(pos.y);
+        const topBorder = Math.floor(pos.y);
         const bottomBorder = Math.ceil(pos.y + size.y);
 
         if ((leftBorder < 0) || (rightBorder > this.width) || (topBorder < 0)) {
@@ -133,15 +133,48 @@ class Level {
             return 'lava';
         }
 
-        for (let i = topBorder; i < bottomBorder; i++) {
-            for (let j = leftBorder; j < rightBorder; j++) {
-                if (this.grid[i][j]) {
-                    return this.grid[i][j];
-                } else {
-                    return undefined;
+        // for (let i = topBorder; i < bottomBorder; i++) {
+        //     for (let j = leftBorder; j < rightBorder; j++) {
+        //         if (this.grid[i][j]) {
+        //             return this.grid[i][j];
+        //         } else {
+        //             return undefined;
+        //         }
+        //     }
+        // }
+
+        for (let y = topBorder; y < bottomBorder; y++) {
+            for (let x = leftBorder; x < rightBorder; x++) {
+                const gridBlock = this.grid[y][x];
+                if (gridBlock) {
+                    return gridBlock;
                 }
             }
         }
+
+        // const left = Math.floor(pos.x);
+        // const right = Math.ceil(pos.x + size.x);
+        // const top = Math.floor(pos.y);
+        // const bottom = Math.ceil(pos.y + size.y);
+
+        // if (!(pos instanceof Vector) || !(size instanceof Vector)) {
+        // throw new Error('Объект должен быть типа Vector');
+        // }
+
+        // if (left < 0 || right > this.width || top < 0) {
+        // return 'wall';
+        // }
+        // if (bottom > this.height) {
+        // return 'lava';
+        // }
+        // for (let y = top; y < bottom; y++) {
+        //     for (let x = left; x < right; x++) {
+        //         const gridBlock = this.grid[y][x];
+        //         if (gridBlock) {
+        //             return gridBlock;
+        //         }
+        //     }
+        // }
     }
 
     removeActor(actor) {
